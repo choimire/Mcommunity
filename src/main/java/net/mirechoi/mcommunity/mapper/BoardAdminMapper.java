@@ -10,9 +10,9 @@ import net.mirechoi.mcommunity.dto.BoardCategory;
 @Mapper
 public interface BoardAdminMapper {
 	
-	int setBoardAdmin(BoardAdminDTO dto);
+	int setBoardAdmin(String btitle);
 	int updateBoardAdmin(BoardAdminDTO dto);
-	int deleteeBoardAdmin(int id);
+	int deleteBoardAdmin(int id);
 	BoardAdminDTO getBoardAdmin(int id);
 	List<BoardAdminDTO> allList();
 	List<BoardCategory> allCategoryByBoardId(int id);

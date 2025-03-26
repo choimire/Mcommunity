@@ -19,9 +19,18 @@ public class BoardAdminService {
 	@Autowired
 	private BoardCategoryMapper bcMapper;
 	
+	public int insertBoardAdmin(String btitle) {
+		return baMapper.setBoardAdmin(btitle);
+	}
+	
 	public int editBoardAdmin(BoardAdminDTO bAdmin) {
 		return baMapper.updateBoardAdmin(bAdmin);
 	}
+	
+	public int delBoardAdmin(int id) {
+		return baMapper.deleteBoardAdmin(id);
+	}
+	
 	
 	public BoardAdminDTO getSelectById(int id) {
 		return baMapper.getBoardAdmin(id);

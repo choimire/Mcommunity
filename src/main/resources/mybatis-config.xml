@@ -10,6 +10,7 @@
 		<typeAlias type="net.mirechoi.mcommunity.dto.Users" alias="Users"/>  	
 		<typeAlias type="net.mirechoi.mcommunity.dto.BoardAdminDTO" alias="Admin"/>  	
 		<typeAlias type="net.mirechoi.mcommunity.dto.BoardCategory" alias="Category"/>  	
+  		<typeAlias type="net.mirechoi.mcommunity.dto.BoardDTO" alias="BoardDTO"/>
   	</typeAliases>
   	
   </configuration>

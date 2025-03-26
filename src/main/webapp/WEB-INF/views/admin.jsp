@@ -85,8 +85,8 @@
                        <div class="modal-footer">
                        <c:if test="${not empty list.boardCategory }">
                            <button type="button" data-bid="${list.id }" class="categoryEdit btn btn-warning">수정</button> 
-                           </form>
                         </c:if>   
+                           </form>
                           <button type="button" class="btn btn-danger" data-dismiss="modal">닫기</button>
                        </div> 
                    </div> 
@@ -152,8 +152,8 @@
                  	</div>
                  	<label class="mt-2">확장자 제한</label>
                  	<div class="input-group mb-3">
-                 	<label class="mr-4"><input type="radio" name="filechar" class="filechar" value="0">업로드 모두 허용</label>
-                 	<label><input type="radio" name="filechar" class="filechar" value="1">이미지 전용</label>
+                 	<label class="mr-4"><input type="radio" name="filechar" class="filechar" value="0" <c:if test="${list.filechar == 0 }">checked</c:if>/>업로드 모두 허용</label>
+                 	<label><input type="radio" name="filechar" class="filechar" value="1" <c:if test="${list.filechar == 1 }">checked</c:if>/>이미지 전용</label>
                  	</div>
                  	<div class="thumbnail">
                  		<label class="mt-2">기본 섬네일 크기</label>
@@ -193,7 +193,9 @@
           </td>
           <td>
              <button type="button" data-id="${list.id }" class="edit btn btn-warning">수정</button>
+          <c:if test="${not empty lists && list.id !=1 }">
              <button type="button" data-id="${list.id }" class="del btn btn-danger">삭제</button>
+          </c:if>
           </td>
        </tr>  
        <input type="hidden" id="fgrade_${list.id }" value="${list.fgrade }" />  
@@ -205,161 +207,208 @@
        </c:forEach>
      </tbody>
   </table>
-</div>
-<script>
-$(function(){
-   <c:forEach var="list" items="${lists }">
-     $("#skin_${list.id}").val('${list.skin}').trigger('change');
-     $("#category_${list.id}").val("${list.category}").trigger('change');
-      $("#lgrade_${list.id}").val("${list.lgrade}").trigger('change');
-      $("#rgrade_${list.id}").val("${list.rgrade}").trigger('change');
-      $("#upload_${list.id}").val("${list.upload}").trigger('change');
-      $("#regrade_${list.id}").val("${list.regrade}").trigger('change');
-      $("#cgrade_${list.id}").val("${list.cgrade}").trigger('change');
-   </c:forEach>
-   
-   $(".edit").click(function(){
-      const id = $(this).data("id");
-      const btitle = $("#btitle_"+id).val();
-      const skin = $("#skin_"+id).val();
-      const category = $("#category_"+id).val();
-      const listcount = $("#listcount_"+id).val();
-      const pagecount = $("#pagecount_"+id).val();
-      const lgrade = $("#lgrade_"+id).val();
-      const rgrade = $("#rgrade_"+id).val();
-      const upload = $("#upload_"+id).val();
-      const regrade = $("#regrade_"+id).val();
-      const cgrade = $("#cgrade_"+id).val();
-      const fgrade = $("#fgrade_"+id).val();
-      const fdgrade = $("#fdgrade_"+id).val();
-      const filesize = $("#filesize_"+id).val();
-      const allfilesize = $("#allfilesize_"+id).val();
-      const thimgsize = $("#thimgsize_"+id).val();
-      const filechar = $("#filechar_"+id).val();
-         
-         
-      $.ajax({
-         url: "admin/edtBoard",
-         method: "post",
-         contentType: 'application/json; charset=UTF-8',
-         headers: { "X-CSRF-TOKEN": "${_csrf.token}"},
-         data: JSON.stringify({
-            id,btitle,skin,category,listcount,pagecount,lgrade,rgrade,upload,regrade,cgrade,
-            fgrade, fdgrade, filesize, allfilesize, thimgsize, filechar
-         }),
-         success: function(rs){
-            if(rs == 1){
-               alert("수정이 완료 되었습니다.");
-               location.reload(true);
-            }else{
-               alert("문제가 발생했습니다.");
-            }
-         },
-         error: function(error){
-            alert("문제가 발생했습니다. " + error);
-         }
-      })
-   });
-   
-   //sortable
-   $("[id^='categoryList']").sortable({
-	   items: "li"
-   });
-   
-   //카테고리 등록
-   $(".addCate").click(function(){
-      const form = $(this).closest("form");
-       const bid = form.find("#bid").val();
-       const categoryText = form.find("#categoryText").val();
-       const data = { bid, categoryText };
-       $.ajax({
-          type: "POST",
-          contentType: "application/json;charset=utf-8",
-          url: "admin/addCategory",
-          headers: { "X-CSRF-TOKEN": "${_csrf.token}"},
-          data: JSON.stringify(data),
-          success: function(dto){
-            if(dto && dto.id != ""){
-               alert("카테고리가 등록되었습니다.");
-               let ct = '<li class="row my-2">' +
-                           '<div class="col-9">' +
-                           '<input type="text" name="categorytext[]" value="'+dto.categoryText+'"'+
-                           'class="form-control clist">'+
-                           '</div>'+
-                           '<div class="col-3">'+
-                           '<button type="button" data-delid="'+dto.id+'" class="categoryDel btn btn-danger btn-sm">삭제</button>'+
-                           '</div>'+
-                           '</li>';
-                  $('#categoryList_'+bid).append(ct);
-            }else{
-               alert("문제가 발생했습니다.");
-            }   
-          },
-          error: function(error){
-             alert("문제가 발생했습니다." + error);
-          }
-       });
-   });
-   
-   //카테고리 삭제
-   $(document).on("click", ".categoryDel", function(){
-      const delid = $(this).data("delid");
-      if(confirm("정말로 삭제하시겠습니까?")){
-         if(delid){
-            const li = $(this).closest("li");
-            $.post("admin/delCategory?${_csrf.parameterName}=${_csrf.token}&id="+delid, function(data){
-              if(data){alert("삭제되었습니다.");}else{alert("문제가 발생했습니다.");} 
-            });
-            li.remove(); 
-         }else{
-            alert("문제가 발생했습니다.");
-         }   
-      }
-   });
-   
-   //카테고리 수정
-   $('.categoryEdit').click(function(){
-      const bid = $(this).data("bid");
-      let formData = [];
-      let categoryText, id;
-      //.sortable로 변경된 순서를 li 루프를 돌리면서 순서값으로 등록
-      $("ul.sortable#categoryList_"+bid+' li').each(function(index){
-         categoryText = $(this).find("input[name='categorytext[]']").val();
-         id = $(this).find("input[name='id[]']").val();
-         formData.push({
-            id,
-            bid,
-            categoryText,
-            categoryNum : index + 1
-         });
-      });
-      
-      $.ajax({
-         type:"POST",
-         url:"admin/edtCategory",
-          contentType: "application/json;charset=utf-8",
-          headers: { "X-CSRF-TOKEN": "${_csrf.token}"},
-          data: JSON.stringify(formData),
-          success: function(data){
-             if(data == 1){
-                alert("카테고리가 수정되었습니다.");
-             }else{
-                alert("문제가 발생했습니다.");
-             }
-          },
-          error: function(error){
-             alert("에러가 발생했습니다." + error);
-          }
-      });
-      
-    });
-   
-/*   $('.filechar').each(function(){
-	  if($(this).val() == 1 && $(this).is(':checked')){
+  <div class="my-4 text-right w-100">
+  	<button class="btn btn-primary comcreate" data-toggle="modal" data-target="#mkcom">커뮤니티 등록</button>
+  </div>
+		<!-- 커뮤니티 등록 모달 -->
+			<div class="modal" tabindex="-1" id="mkcom">
+		           <div class="modal-dialog">
+		             <div class="modal-content">
+		               <div class="modal-header">
+		                 <h3 class="modal-title">커뮤니티 등록</h3>
+		                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		                   <span aria-hidden="true">&times;</span>
+		                 </button>
+		               </div>
+		               <div class="modal-body p-5">
+		                 <form id="mkcomForm" action="./admin/create" method="post">
+		                 	<label class="mt-2">커뮤니티 이름</label>
+		                 	<div class="input-group mb-3">
+		                 		<input type="text" name="btitle"  class="form-control" placeholder="커뮤니티 이름"/>
+		                 	</div>
+		                 <div class="text-center">
+		                 <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
+		                 <button type="submit" class="btn btn-secondary">등록</button>
+		                 <button type="reset" class="btn btn-warning">취소</button>
+		                 </div>
+		                 </form>
+		                 </div>
+		            <div class="modal-footer">
+		            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		               </div>
+		             </div>
+		           </div>
+		         </div>
 
-	  }
-  }); */
-   
-   
-});
-</script>
+				<script>
+				$(function(){
+				   <c:forEach var="list" items="${lists }">
+				     $("#skin_${list.id}").val('${list.skin}').trigger('change');
+				     $("#category_${list.id}").val("${list.category}").trigger('change');
+				      $("#lgrade_${list.id}").val("${list.lgrade}").trigger('change');
+				      $("#rgrade_${list.id}").val("${list.rgrade}").trigger('change');
+				      $("#upload_${list.id}").val("${list.upload}").trigger('change');
+				      $("#regrade_${list.id}").val("${list.regrade}").trigger('change');
+				      $("#cgrade_${list.id}").val("${list.cgrade}").trigger('change');
+				   </c:forEach>
+				   
+				   $(".del").click(function(){
+					   if(confirm("정말로 삭제하시겠습니까? 삭제하면 복구가 불가능 합니다.")){
+						  const delid = $(this).data("id");
+						  $.post("admin/delete?${_csrf.parameterName}=${_csrf.token}&id="+delid, function(data){
+				              if(data){
+				            	  alert("삭제되었습니다.");
+				            	  location.reload(true);
+				            	  }else{
+				            		  alert("문제가 발생했습니다.");
+				            	} 
+				            });
+					   }
+				   });
+				   
+				   
+				   $(".edit").click(function(){
+				      const id = $(this).data("id");
+				      const btitle = $("#btitle_"+id).val();
+				      const skin = $("#skin_"+id).val();
+				      const category = $("#category_"+id).val();
+				      const listcount = $("#listcount_"+id).val();
+				      const pagecount = $("#pagecount_"+id).val();
+				      const lgrade = $("#lgrade_"+id).val();
+				      const rgrade = $("#rgrade_"+id).val();
+				      const upload = $("#upload_"+id).val();
+				      const regrade = $("#regrade_"+id).val();
+				      const cgrade = $("#cgrade_"+id).val();
+				      const fgrade = $("#fgrade_"+id).val();
+				      const fdgrade = $("#fdgrade_"+id).val();
+				      const filesize = $("#filesize_"+id).val();
+				      const allfilesize = $("#allfilesize_"+id).val();
+				      const thimgsize = $("#thimgsize_"+id).val();
+				      const filechar = $("#filechar_"+id).val();
+				         
+				         
+				      $.ajax({
+				         url: "admin/edtBoard",
+				         method: "post",
+				         contentType: 'application/json; charset=UTF-8',
+				         headers: { "X-CSRF-TOKEN": "${_csrf.token}"},
+				         data: JSON.stringify({
+				            id,btitle,skin,category,listcount,pagecount,lgrade,rgrade,upload,regrade,cgrade,
+				            fgrade, fdgrade, filesize, allfilesize, thimgsize, filechar
+				         }),
+				         success: function(rs){
+				            if(rs == 1){
+				               alert("수정이 완료 되었습니다.");
+				               location.reload(true);
+				            }else{
+				               alert("문제가 발생했습니다.");
+				            }
+				         },
+				         error: function(error){
+				            alert("문제가 발생했습니다. " + error);
+				         }
+				      })
+				   });
+				   
+				   //sortable
+				   $("[id^='categoryList']").sortable({
+					   items: "li"
+				   });
+				   
+				   //카테고리 등록
+				   $(".addCate").click(function(){
+				      const form = $(this).closest("form");
+				       const bid = form.find("#bid").val();
+				       const categoryText = form.find("#categoryText").val();
+				       const data = { bid, categoryText };
+				       $.ajax({
+				          type: "POST",
+				          contentType: "application/json;charset=utf-8",
+				          url: "admin/addCategory",
+				          headers: { "X-CSRF-TOKEN": "${_csrf.token}"},
+				          data: JSON.stringify(data),
+				          success: function(dto){
+				            if(dto && dto.id != ""){
+				               alert("카테고리가 등록되었습니다.");
+				               let ct = '<li class="row my-2">' +
+				                           '<div class="col-9">' +
+				                           '<input type="text" name="categorytext[]" value="'+dto.categoryText+'"'+
+				                           'class="form-control clist">'+
+				                           '</div>'+
+				                           '<div class="col-3">'+
+				                           '<button type="button" data-delid="'+dto.id+'" class="categoryDel btn btn-danger btn-sm">삭제</button>'+
+				                           '</div>'+
+				                           '</li>';
+				                  $('#categoryList_'+bid).append(ct);
+				            }else{
+				               alert("문제가 발생했습니다.");
+				            }   
+				          },
+				          error: function(error){
+				             alert("문제가 발생했습니다." + error);
+				          }
+				       });
+				   });
+				   
+				   //카테고리 삭제
+				   $(document).on("click", ".categoryDel", function(){
+				      const delid = $(this).data("delid");
+				      if(confirm("정말로 삭제하시겠습니까?")){
+				         if(delid){
+				            const li = $(this).closest("li");
+				            $.post("admin/delCategory?${_csrf.parameterName}=${_csrf.token}&id="+delid, function(data){
+				              if(data){alert("삭제되었습니다.");}else{alert("문제가 발생했습니다.");} 
+				            });
+				            li.remove(); 
+				         }else{
+				            alert("문제가 발생했습니다.");
+				         }   
+				      }
+				   });
+				   
+				   //카테고리 수정
+				   $('.categoryEdit').click(function(){
+				      const bid = $(this).data("bid");
+				      let formData = [];
+				      let categoryText, id;
+				      //.sortable로 변경된 순서를 li 루프를 돌리면서 순서값으로 등록
+				      $("ul.sortable#categoryList_"+bid+' li').each(function(index){
+				         categoryText = $(this).find("input[name='categorytext[]']").val();
+				         id = $(this).find("input[name='id[]']").val();
+				         formData.push({
+				            id,
+				            bid,
+				            categoryText,
+				            categoryNum : index + 1
+				         });
+				      });
+				      
+				      $.ajax({
+				         type:"POST",
+				         url:"admin/edtCategory",
+				          contentType: "application/json;charset=utf-8",
+				          headers: { "X-CSRF-TOKEN": "${_csrf.token}"},
+				          data: JSON.stringify(formData),
+				          success: function(data){
+				             if(data == 1){
+				                alert("카테고리가 수정되었습니다.");
+				             }else{
+				                alert("문제가 발생했습니다.");
+				             }
+				          },
+				          error: function(error){
+				             alert("에러가 발생했습니다." + error);
+				          }
+				      });
+				      
+				    });
+				   
+				/*   $('.filechar').each(function(){
+					  if($(this).val() == 1 && $(this).is(':checked')){
+				
+					  }
+				  }); */
+				   
+				   
+				});
+				</script>

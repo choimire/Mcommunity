@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -21,6 +22,7 @@ import net.mirechoi.mcommunity.mapper.UserMapper;
 import net.mirechoi.mcommunity.service.BoardAdminService;
 
 @Controller
+@RequestMapping("/admin")
 public class AdminController {
 	@Autowired
 	private UserMapper userMapper;
@@ -28,7 +30,7 @@ public class AdminController {
 	@Autowired
 	private BoardAdminService baService;
 	
-	@GetMapping("/admin")
+	@GetMapping("")
 	public String adminForm(Model model) {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		
@@ -40,7 +42,22 @@ public class AdminController {
 		model.addAttribute("lists", balist);
 		return "admin.admin";
 	}
-	@PostMapping(value="/admin/edtBoard", consumes="application/json")
+	
+	@PostMapping("/create")
+	public String createForm(@RequestParam("btitle") String btitle) {
+		baService.insertBoardAdmin(btitle);
+		return "redirect:/admin";	
+		}
+	
+	@PostMapping("/delete")
+	@ResponseBody
+	public String delBoardAdmin(@RequestParam("id") int id) {
+		int rs= baService.delBoardAdmin(id);
+		String result = rs > 0 ? "1" : "0";
+		return result;
+	}
+	
+	@PostMapping(value="/edtBoard", consumes="application/json")
 	@ResponseBody
 	public ResponseEntity<String> edtBoardAdmin(@RequestBody BoardAdminDTO dto) {
 	    System.out.println(dto.toString());
@@ -54,21 +71,21 @@ public class AdminController {
 		}
 	}
 
-	@PostMapping(value="admin/addCategory", consumes="application/json")
+	@PostMapping(value="/addCategory", consumes="application/json")
 	@ResponseBody
 	public BoardCategory addCategory(@RequestBody BoardCategory boardCategory){
 	
 		return baService.boardCategoryInsert(boardCategory);
 	}
 	
-	@PostMapping("admin/delCategory")
+	@PostMapping("/delCategory")
 	@ResponseBody
 	public String deleteCategory(@RequestParam("id")int id) {
 		int rs = baService.boardCategoryDelete(id);
 		String result = rs > 0 ? "1" : "0";
 		return result;
 	}
-	@PostMapping("admin/edtCategory")
+	@PostMapping("/edtCategory")
 	@ResponseBody
 	public String edtCategory(@RequestBody List<BoardCategory> boardCategories) {
 		int rs= 0;
