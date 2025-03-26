@@ -301,3 +301,7 @@ a.btn:hover{
     margin-right:20px;
     padding:20px;
 }
+/************ WRITE **************/
+.writeform textarea{
+	width:100%;
+}

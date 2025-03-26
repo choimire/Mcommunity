@@ -4,7 +4,7 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <link rel="stylesheet" href="/mcommunity/res/css/skin/board/style.css">    
-<script src="/mcommunity/bbs/js/script.js" defer></script>
+<script src="/mcommunity/res/js/skin/board/js/script.js" defer></script>
 <c:set var="nowmills" value="<%=System.currentTimeMillis() %>"></c:set>
 <c:if test="${badmin.lgrade> 0}">
 	<sec:authorize access="!isAuthenticated()">
@@ -107,8 +107,8 @@
         </tbody> 
     </table>
     <div class="d-flex justify-content-end mt-4">
-    	<c:if test="${badmin.rgrade > user.grade}">
-        <a href="write.html" class="btn">글쓰기</a>
+    	<c:if test="${badmin.rgrade <= user.grade || badmin.rgrade == 0}">
+        <a href="board/write?bid=${badmin.id }" class="btn">글쓰기</a>
         </c:if>
     </div>
     <ul class="paging">

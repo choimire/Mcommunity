@@ -21,7 +21,9 @@ public class BoardAdminDTO {
 	private int allfilesize; //허용 파일 총 크기
 	private String thimgsize; //썸네일 크기 150*150
 	private byte filechar; //0이면 이미지만 업로드 1이면 모든 업로드 허용
+	private byte sec;
 	private List<BoardCategory> boardCategory;
+	private int bbsCount; // 게시글 갯수
 	public int getId() {
 		return id;
 	}
@@ -136,14 +138,26 @@ public class BoardAdminDTO {
 	public void setBoardCategory(List<BoardCategory> boardCategory) {
 		this.boardCategory = boardCategory;
 	}
+	public byte getSec() {
+		return sec;
+	}
+	public void setSec(byte sec) {
+		this.sec = sec;
+	}
+	public int getBbsCount() {
+		return bbsCount;
+	}
+	public void setBbsCount(int bbsCount) {
+		this.bbsCount = bbsCount;
+	}
 	@Override
 	public String toString() {
 		return "BoardAdminDTO [id=" + id + ", btitle=" + btitle + ", skin=" + skin + ", category=" + category
 				+ ", listcount=" + listcount + ", pagecount=" + pagecount + ", lgrade=" + lgrade + ", vgrade=" + vgrade
 				+ ", rgrade=" + rgrade + ", fgrade=" + fgrade + ", fdgrade=" + fdgrade + ", cgrade=" + cgrade
 				+ ", regrade=" + regrade + ", upload=" + upload + ", filesize=" + filesize + ", allfilesize="
-				+ allfilesize + ", thimgsize=" + thimgsize + ", filechar=" + filechar + ", boardCategory="
-				+ boardCategory + "]";
+				+ allfilesize + ", thimgsize=" + thimgsize + ", filechar=" + filechar + ", sec=" + sec
+				+ ", boardCategory=" + boardCategory + ", bbsCount=" + bbsCount + "]";
 	}
 	
 	

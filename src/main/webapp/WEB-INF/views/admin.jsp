@@ -11,6 +11,7 @@
          <th>번호</th>
          <th>커뮤니티이름</th>
          <th>스킨</th>
+ 		 <th>비밀글</th>     
          <th>카테고리</th>
          <th>목록크기</th>
          <th>페이지크기</th>
@@ -37,6 +38,12 @@
                 <option value="blog">블로그형</option>
                 <option value="diary">다이어리</option>
              </select>
+          </td>
+          <td>
+          	<select name="sec" id="sec_${list.id }">
+          		<option value="0">사용안함</option>
+          		<option value="1">사용함</option>
+          	</select>
           </td>
           <td>
             <select name="category" id="category_${list.id }">
@@ -250,6 +257,7 @@
 				      $("#upload_${list.id}").val("${list.upload}").trigger('change');
 				      $("#regrade_${list.id}").val("${list.regrade}").trigger('change');
 				      $("#cgrade_${list.id}").val("${list.cgrade}").trigger('change');
+				      $("#sec_${list.id}").val("${list.sec}").trigger('change');
 				   </c:forEach>
 				   
 				   $(".del").click(function(){
@@ -285,6 +293,7 @@
 				      const allfilesize = $("#allfilesize_"+id).val();
 				      const thimgsize = $("#thimgsize_"+id).val();
 				      const filechar = $("#filechar_"+id).val();
+				      const sec = $("sec_"+id).val();
 				         
 				         
 				      $.ajax({
@@ -294,7 +303,7 @@
 				         headers: { "X-CSRF-TOKEN": "${_csrf.token}"},
 				         data: JSON.stringify({
 				            id,btitle,skin,category,listcount,pagecount,lgrade,rgrade,upload,regrade,cgrade,
-				            fgrade, fdgrade, filesize, allfilesize, thimgsize, filechar
+				            fgrade, fdgrade, filesize, allfilesize, thimgsize, filechar,sec
 				         }),
 				         success: function(rs){
 				            if(rs == 1){

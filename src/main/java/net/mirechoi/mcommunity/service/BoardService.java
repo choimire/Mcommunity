@@ -20,7 +20,7 @@ public class BoardService {
 		
 	}
 	
-	public BoardDTO getBoard(long id) {
+	public BoardDTO getBoardById(long id) {
 		return bMapper.getBoardById(id);
 		
 	}

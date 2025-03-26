@@ -31,7 +31,8 @@
   		filesize= #{filesize},
   		allfilesize= #{allfilesize},
   		thimgsize= #{thimgsize},
-  		filechar= #{filechar}
+  		filechar= #{filechar},
+  		sec = #{sec}
   	WHERE id = #{id}
   </update>
   <delete id="deleteBoardAdmin" parameterType="int">
@@ -49,7 +50,8 @@
   	SET
   	filesize = #{filesize},
   	allfilesize = #{allfilesize},
-  	filechar = #{filechar}
+  	filechar = #{filechar},
+  	sec=#{sec}
   	WHERE id= #{id}
   	
   </update>

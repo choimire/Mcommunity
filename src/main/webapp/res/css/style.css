@@ -143,4 +143,11 @@ footer .section-title {
     padding-bottom: 0px;
     margin-bottom: 10px;
 }
+/**************** admin ****************/
+.comtable input[type=text].count{
+	width:50px;
 }
+.comtable input[type=text].btitle{
+	width:150px;
+}
+
