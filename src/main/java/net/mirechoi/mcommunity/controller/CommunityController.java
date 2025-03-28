@@ -9,8 +9,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import net.mirechoi.mcommunity.dto.BoardAdminDTO;
 import net.mirechoi.mcommunity.dto.BoardCategory;
@@ -59,7 +62,7 @@ public class CommunityController {
 
 	   @GetMapping("/view")
 	   public String boardView(@RequestParam("id") long id, Model model) {
-	      
+	      System.out.println("daadad");
 	        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 	        System.out.println("로그인 정보 : " + auth.getName());
 	        
@@ -79,7 +82,19 @@ public class CommunityController {
 	      
 	      return "board.list";
 	   }
-
+		@PostMapping("/checkPass")
+		@ResponseBody
+		public String checkPassword(
+				@RequestParam("id") int id, 
+				@RequestParam("password") String password) {
+			BoardDTO bDto = bservice.getBoardByPass(id, password);
+			if(bDto == null) {
+				return "failure";
+			}else {
+			    return "success";
+			}    
+		}
+		
 
 	@GetMapping("/write")
 	   public String boardWriteForm(@RequestParam("bid") int bbsid, Model model) {
@@ -105,5 +120,36 @@ public class CommunityController {
 	      
 	      return "board.list";
 	   }
-
+	@PostMapping("/write")
+	public String writeAction(
+		   @RequestParam("bbsid") int bbsid,	
+		   @RequestParam("writer") String writer,
+		   @RequestParam("userid") String userid,
+		   @RequestParam(value="password", required=false) String password,
+		   @RequestParam("title") String title,
+		   @RequestParam("content") String content,
+		   @RequestParam(value="sec", defaultValue="0") byte sec,
+		   @RequestParam("category") String category,
+	       RedirectAttributes redirectAttributes) {
+		
+		   BoardDTO dto = new BoardDTO();
+		   dto.setBbsid(bbsid);
+		   dto.setWriter(writer);
+		   dto.setUserid(userid);
+		   dto.setPassword(password);
+		   dto.setTitle(title);
+		   dto.setContent(content);
+		   dto.setSec(sec);
+		   dto.setCategory(category);
+		   
+		
+		   int res = bservice.insertBoard(dto);
+		   if(res == 1) {
+			   redirectAttributes.addFlashAttribute("message", "등록되었습니다.");
+		   }else {
+			   redirectAttributes.addFlashAttribute("message", "문제가 발생해서 등록에 실패했습니다.");
+		   }
+		
+		return "redirect:/board?bid="+bbsid;
+	}
 }

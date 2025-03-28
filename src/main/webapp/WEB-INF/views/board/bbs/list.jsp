@@ -81,10 +81,10 @@
              <td>
              <c:choose>
              	<c:when test="${badmin.vgrade > user.grade}">
-             <a href="detail.html">${list.title } ${difmill }</a>
+             <a href="board/view?id=${list.id }">${list.title } ${difmill }</a>
              </c:when>
              <c:otherwise>
-             	<a href="view?id=${list.id }">${list.title}</a>
+             	<a href="board/view?id=${list.id }">${list.title}</a>
              </c:otherwise>
              </c:choose>
              </td>
@@ -124,3 +124,17 @@
     </ul>
     <!-- / design list-->
 </div>
+	<script>
+	$(function(){
+		$('.pss').click(function(e){
+		   e.preventDefault();
+		   const pss = prompt("비밀번호를 입력하세요.");
+		   const id = $(this).data("id");
+		   $.post("listpass", { id , pss }, function(rs){
+			  if(rs == 1){
+				  location.href="view?id="+id;
+			  } 
+		   });
+		});
+	});
+	</script>

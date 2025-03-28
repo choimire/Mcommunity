@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -54,6 +55,18 @@ public class HomeController {
 		
 		return "main.login";
 	}
-
+	@GetMapping("/register")
+	public String RegisterForm(Model model) {
+        List<BoardAdminDTO> baList = baService.getAllList();
+       // System.out.println(baList.toString());
+        model.addAttribute("baLists", baList);
+		return "main.register";
+	}
+	/** 이 부분은 직접 작업해 보세요 **/
+	@PostMapping("/register")
+	public String Register() {
+		return "redirect: /";
+	}
+	
 
 }

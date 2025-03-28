@@ -9,6 +9,10 @@
   	<select id="getBoardById" parameterType="long" resultType="BoardDTO">
   		SELECT * FROM board WHERE id= #{id}
   	</select>
+  	   <!-- 비밀번호 확인 -->
+   <select id="getBoardByPassword" parameterType="Map" resultType="BoardDTO">
+      SELECT * FROM board WHERE id=#{id} and password=#{password}
+   </select>
   	<insert id="setBoard" parameterType="BoardDTO">
   		INSERT INTO board
   		(bbsid,ref,step,depth,writer,userid,password,title,content,sec,category)

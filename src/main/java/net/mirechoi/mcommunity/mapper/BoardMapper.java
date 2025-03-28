@@ -1,6 +1,7 @@
 package net.mirechoi.mcommunity.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -14,5 +15,5 @@ public interface BoardMapper {
 	int setBoard(BoardDTO dto);
 	int setUpdateBoard(BoardDTO dto);
 	int setDeleteBoard(long id);
-	
+	BoardDTO getBoardByPassword(Map<String, Object> params);
 }

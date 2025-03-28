@@ -7,6 +7,7 @@ public class BoardDTO {
 	private int bbsid;
 	private long ref;
 	private int step;
+	private int depth;
 	private String writer;
 	private String userid;
 	private String password;
@@ -40,6 +41,12 @@ public class BoardDTO {
 	}
 	public void setStep(int step) {
 		this.step = step;
+	}
+	public int getDepth() {
+		return depth;
+	}
+	public void setDepth(int depth) {
+		this.depth = depth;
 	}
 	public String getWriter() {
 		return writer;
@@ -103,9 +110,10 @@ public class BoardDTO {
 	}
 	@Override
 	public String toString() {
-		return "BoardDTO [id=" + id + ", bbsid=" + bbsid + ", ref=" + ref + ", step=" + step + ", writer=" + writer
-				+ ", userid=" + userid + ", password=" + password + ", title=" + title + ", content=" + content
-				+ ", comment=" + comment + ", sec=" + sec + ", category=" + category + ", hit=" + hit + ", wdate="
-				+ wdate + "]";
+		return "BoardDTO [id=" + id + ", bbsid=" + bbsid + ", ref=" + ref + ", step=" + step + ", depth=" + depth
+				+ ", writer=" + writer + ", userid=" + userid + ", password=" + password + ", title=" + title
+				+ ", content=" + content + ", comment=" + comment + ", sec=" + sec + ", category=" + category + ", hit="
+				+ hit + ", wdate=" + wdate + "]";
 	}
+	
 }
