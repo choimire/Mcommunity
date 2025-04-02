@@ -9,9 +9,9 @@ import net.mirechoi.mcommunity.dto.FileDTO;
 public interface FileMapper {
 	
 	int insertFile(FileDTO file);
-	int updateFileById(@Param("bid") long bid, @Param("tempId")long tempId);
+	int updateFileById(@Param("bid") long bid, @Param("tempBid")long tempBid);
 	int deleteFile(long id);
 	List<FileDTO> selectFileById(long bid);
-	void deleteTrashFile();
 	FileDTO fileById(long id);
+	FileDTO fileByFileName(String fname);
 }

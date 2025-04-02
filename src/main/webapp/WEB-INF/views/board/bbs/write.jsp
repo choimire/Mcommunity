@@ -28,44 +28,79 @@ $(function(){
 	        callbacks:{
 	        	onImageUpload : function(files){
 	        		uploadFile(files[0],true);
-	        	}
+	        	},
+				onMediaDelete : function(target) {
+			        const imageUrl = target[0].src;
+			        console.log(imageUrl);
+			        deleteFile(imageUrl);
+			     }
 	        }
 	});
-});
+
 
 		function uploadFile(file, insertIntoEditor){
 			const formData = new FormData();
-			const bid =$("#bbsid").val();
+			const bbsid =$("#bbsid").val();
 			const tempBid = $("#tempBid").val();
+			console.log(tempBid);
 			const addFileSize = $("#addFileSize").val();
 			formData.append('bbsid' ,bbsid);
 			formData.append('tempBid' ,tempBid);
 			formData.append('addFileSize', addFileSize);
-			formData.append('file' ,file);
+			formData.append('files' ,file);
 			
 			$.ajax({
 				url:"/mcommunity/file/upload",
 				type:"POST",
-				enctype: "multipart/form-data",
 				data: formData,
 				processData: false,
 				contentType: false,
+				enctype: 'multipart/form-data',
 				beforeSend: function(xhr){
 					xhr.setRequestHeader("${_csrf.headerName}","${_csrf.token}");
 				},
 				success: function(data){
-					const imgUrl = "/mcommunity/res/upload/" +bbsid+"/"+file.nfilename;
+					const imgUrl = "/mcommunity/res/upload/" +bbsid+"/"+data[0].nfilename;
+					console.log(data[0])
 					console.table(data);
 					//summernote에 insertIntoEditor 조건이 true  이면 이미지를 보여줌
 					if(insertIntoEditor){
-						$("#content").summernote('insertImage', ' res/upload/' +bbsid+'/' +data[0].nfilename);
+						$("#content").summernote('insertImage', imgUrl);
 					}
 				},
 				error: function(error){
 					alert("문제가 발생하였습니다.");
 				}
-			});
+			})
 		}
+		
+		function deleteFile(imageUrl) {
+		      alert("떠야");
+		      /* 파일명 추출 */
+		      const fileName = imageUrl.split("/").pop();
+		      const bbsid = $("#bbsid").val();
+		      $.ajax({
+		         url: "/mcommunity/file/delete"
+		         , type: 'POST'
+		         , data: {fileName, bbsid}
+		         , beforeSend: function(xhr){
+		            xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+		         }
+		         , success: function(data) {
+		            if(data == 1) {
+		               console.log("삭제완료");
+		            } else {
+		               console.log("삭제실패");
+		            }
+		         }
+		         , error: function(error) {
+		            alert("삭제중 오류 발생");
+		         }
+		      });
+		      
+		   }
+});
+		
 		</script>
 		<c:set var="tempBid" value="<%=System.currentTimeMillis() %>"/>
 		<c:if test="${boardAdmin.rgrade > 0 }">
@@ -122,10 +157,15 @@ $(function(){
 						
 						<c:if test="${badmin.sec ==1 }">
 						<div class="col-12 text-right">
-							<label><input type="checkbox" name="sec" value="1"/>비밀글</label>
+							<label><input type="checkbox" name="sec" value="1"/>비밀글${user.userid }</label>
 						</div>
 						</c:if>
 		            </div>
+		             <c:if test="${user.userid==null || user.userid.isEmpty() }">
+		            <div class="my-4 d-flex justify-content-end">
+		           <div class="g-recaptcha mx-auto" data-sitekey="6LcxGQcrAAAAAJwat3u52R03uXiieHd0M6pdYkW3"></div>
+		           </div>
+		            </c:if> 
 		            <div class="text-center my-4">
 		                <button class="btn btn-danger" type="reset">취소</button>
 		                <button class="btn btn-dark" type="submit">전송</button>
@@ -140,8 +180,8 @@ $(function(){
 		            	</c:otherwise>
 		            </c:choose>
 		           <input type="hidden" name="bbsid" id="bbsid" value="${param.bid }">
-		           <input type="hidden" name="tempBid" id="tempBid" value="${tempBid } }">
-		           <input type="hidden" name="addFileSize" id="addFileSize" value="${addFileSize }"/>
+		           <input type="hidden" name="tempBid" id="tempBid" value="${tempBid } ">
+		           <input type="hidden" name="addFileSize" id="addFileSize" value="0"/>
 		           <sec:csrfInput/>
 		        </form>
 		        <script>
@@ -172,8 +212,13 @@ $(function(){
 		                    document.writeform.content.focus();
 		                    return false;
 		                }
+		                const captcah = grecaptcha.getResponse();
+		                if(!captcha){
+		                	
+		                }
 		
 		                return true;
 		            }
 		        </script>
 		    </div>
+		    <script src="https://www.google.com/recaptcha/api.js" async defer></script>

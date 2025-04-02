@@ -3,6 +3,8 @@ package net.mirechoi.mcommunity.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +24,7 @@ import net.mirechoi.mcommunity.dto.Users;
 import net.mirechoi.mcommunity.mapper.UserMapper;
 import net.mirechoi.mcommunity.service.BoardAdminService;
 import net.mirechoi.mcommunity.service.BoardService;
+import net.mirechoi.mcommunity.service.FileService;
 
 @Controller
 @RequestMapping("/board")
@@ -36,9 +39,15 @@ public class CommunityController {
 	@Autowired
 	private BoardService bservice;
 	
+	@Autowired
+	   private FileService fileService;
+	
 	  @GetMapping("")
-	   public String boardList(@RequestParam(value="bid", defaultValue = "1") int bid, Model model) {
-	      
+	   public String boardList(@RequestParam(value="bid", defaultValue = "1") int bid, Model model, HttpServletRequest request) {
+		  
+		  //쓰레기 파일 삭제를 위한 경로 세팅
+		  	String uploadPath = request.getSession().getServletContext().getRealPath("res/upload/"+bid);
+		  	fileService.trashFile(uploadPath);
 	        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 	        System.out.println("로그인 정보 : " + auth.getName());
 	        

@@ -26,8 +26,8 @@
   	SELECT * FROM files WHERE id=#{id}
   </select>
   
-  <!-- 쓰레기파일 삭제  13자리의 숫자 (유닉스스타일) 이면 삭제-->
-  <delete id="deleteTrashFile">
-  	DELETE FROM files WHERE LENGTH(bid) = 13 AND bid REGEXP '^[0-9]{13}'
-  </delete>
+  <select id="fileByFileName" parameterType="String" resultType="FileDTO">
+  	SELECT * FROM files WHERE nfilename=#{fname}
+  </select>
+
   </mapper>

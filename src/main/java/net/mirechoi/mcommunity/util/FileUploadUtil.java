@@ -69,7 +69,7 @@ public class FileUploadUtil implements UploadUtil {
 			
 			resultList.add(fdto);
 		}
-		return null;
+		return resultList;
 	}
 	
 	private boolean isImage(String ext) {

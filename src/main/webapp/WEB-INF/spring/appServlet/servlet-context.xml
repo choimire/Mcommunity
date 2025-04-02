@@ -33,7 +33,7 @@
    </beans:bean>
 	
 	<!-- file upload -->
-	<beans:bean id="multopartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
 	
 	<context:component-scan base-package="net.mirechoi.mcommunity" />
 	

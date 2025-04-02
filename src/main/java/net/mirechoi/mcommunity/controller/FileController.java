@@ -1,5 +1,6 @@
 package net.mirechoi.mcommunity.controller;
 
+import java.io.File;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,17 +37,21 @@ public class FileController {
 	@ResponseBody	
 	public ResponseEntity<?> uploadFileAjax(
 			@RequestParam("files") List<MultipartFile> files,
-			@RequestParam("tempId") long bid,
+			@RequestParam("tempBid") long bid,
 			@RequestParam("bbsid") int bbsid,
 			@RequestParam("addFileSize") long addFileSize,
 			HttpServletRequest request
 			){
+		
+		
 			//관리자 보드 검색
 		BoardAdminDTO adto = baService.getSelectById(bbsid);
+		
 		int fileTypeCondition = adto.getFilechar();
 		long fileSizeLimit = adto.getFilesize();
 		long totalFileSizeLimit = adto.getAllfilesize();
 		String uploadPath = request.getSession().getServletContext().getRealPath("res/upload/"+bbsid);
+		System.out.println(uploadPath);
 		
 		try {
 			List<FileDTO> uploadFiles = uploadUtil.uploadFile(
@@ -58,7 +63,7 @@ public class FileController {
 					addFileSize
 					
 					);
-			
+			System.out.println(addFileSize + "," + totalFileSizeLimit + "," + fileSizeLimit + ","+fileTypeCondition);
 			for(FileDTO dto : uploadFiles) {
 				dto.setBid(bid);
 				fileService.insertFile(dto);
@@ -72,4 +77,34 @@ public class FileController {
 			
 		}
 	}
+
+		@PostMapping("/delete")
+		   @ResponseBody
+		   public String deleteFile(
+		         @RequestParam("fileName") String fileName
+		         , @RequestParam("bbsid") int bbsid
+		         , HttpServletRequest request){
+			System.out.println("와라");
+			System.out.println(fileName + "," +bbsid);
+		      try {
+		      String deletePath = request.getSession().getServletContext().getRealPath("/res/upload/" + bbsid);
+		      File file = new File(deletePath, fileName);
+		      
+		      boolean fileDeleted = false;
+		      
+		//      DB에서 크기 가져옴
+		      FileDTO fdto = fileService.selectFileByFileName(fileName);
+		      
+		      if(file.exists()) {
+		    	  fileDeleted = file.delete();
+		      }
+		//      내일 삭제완료
+		      if(fdto != null){
+		    	  fileService.deleteFile(fdto.getId());
+		      }
+		      return fileDeleted? "1" : "0";
+		      }catch(Exception e) {
+		    	  return "0";
+		      }
+   }
 }
