@@ -11,7 +11,7 @@
   </insert>
   
   <update id="updateFileById" parameterType="map">
-  	UPDATE files bid=#{bid} WHERE bid=#{tempId}
+  	UPDATE files SET bid=#{bid} WHERE bid=#{tempId}
   </update>
   
   <delete id="deleteFile" parameterType="long">

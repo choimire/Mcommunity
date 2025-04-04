@@ -20,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import net.mirechoi.mcommunity.dto.BoardAdminDTO;
 import net.mirechoi.mcommunity.dto.BoardCategory;
 import net.mirechoi.mcommunity.dto.BoardDTO;
+import net.mirechoi.mcommunity.dto.FileDTO;
 import net.mirechoi.mcommunity.dto.Users;
 import net.mirechoi.mcommunity.mapper.UserMapper;
 import net.mirechoi.mcommunity.service.BoardAdminService;
@@ -139,6 +140,8 @@ public class CommunityController {
 		   @RequestParam("content") String content,
 		   @RequestParam(value="sec", defaultValue="0") byte sec,
 		   @RequestParam("category") String category,
+		   @RequestParam("tempBid") long tempBid,
+		   
 	       RedirectAttributes redirectAttributes) {
 		
 		   BoardDTO dto = new BoardDTO();
@@ -153,6 +156,13 @@ public class CommunityController {
 		   
 		
 		   int res = bservice.insertBoard(dto);
+		   long bid = dto.getId();
+		   
+		   List<FileDTO> files = fileService.selectFileList(tempBid);
+		   for(FileDTO f: files) {
+			   f.setBid(bid);
+			   fileService.updateFile(bid, tempBid);
+		   }
 		   if(res == 1) {
 			   redirectAttributes.addFlashAttribute("message", "등록되었습니다.");
 		   }else {
@@ -161,4 +171,67 @@ public class CommunityController {
 		
 		return "redirect:/board?bid="+bbsid;
 	}
+	
+	@GetMapping("/edit")
+	public String editForm(@RequestParam("id") long id, @RequestParam("bid") int bid, Model model) {
+		   Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		   BoardDTO dto = bservice.getBoardById(id);
+		   List<BoardAdminDTO> baList = baService.getAllList(); 
+		   BoardAdminDTO adto = baService.getSelectById(bid);
+		   //1.로그인 한 상태의 자신글 ,2. 관리자
+		   
+		   String skinPath = "/WEB-INF/views/board/"+adto.getSkin()+"/pass.jsp";
+	        
+	        if(auth != null) {
+	           Users user = userMapper.getUserForUserid(auth.getName());
+	           model.addAttribute("user", user);
+	           System.out.println(auth.getName());
+	           if(!"anonymousUser".equals(auth.getName())) {
+	        	   if(user.getRole().equals("ADMIN") || user.getUserid().equals(dto.getUserid())) {
+                   skinPath = "/WEB-INF/views/board/"+adto.getSkin()+"/edit.jsp";     
+	                }
+	            }   
+	         }
+
+	       
+
+	      
+	    //카테고리가 사용가능 이면 카테고리를 검증
+			List<BoardCategory> categories = new ArrayList<>();
+			
+			 if(adto.getCategory() == 1) {
+		         categories = baService.getAllCategory(bid);
+		      }
+		      model.addAttribute("categories", categories);
+		      
+		      model.addAttribute("skinPath", skinPath );
+		      model.addAttribute("baLists", baList);
+		      model.addAttribute("badmin", adto);
+		      model.addAttribute("bbs", dto);
+
+		return "board.list";
+	}
+	
+	@GetMapping("/del")
+	
+	public String delForm(@RequestParam("id") long id, @RequestParam("bid") int bid, Model model) {
+		   Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		   BoardDTO dto = bservice.getBoardById(id);
+		   List<BoardAdminDTO> baList = baService.getAllList(); 
+		   BoardAdminDTO adto = baService.getSelectById(bid);
+		   //1.로그인 한 상태의 자신글 ,2. 관리자
+		   String skinPath = "/WEB-INF/views/board/"+adto.getSkin()+"/pass.jsp";
+	        
+	        if(auth != null) {
+	           Users user = userMapper.getUserForUserid(auth.getName());
+	           model.addAttribute("user", user);
+	           if(!"annoymousUser".equals(auth.getName())) {
+	        	   if(user.getRole().equals("ADMIN") || user.getUserid().equals(dto.getUserid())) {
+	                   skinPath = "/WEB-INF/views/board/"+adto.getSkin()+"/edit.jsp";     
+	                }
+	            }   
+	         }
+	        return "board.list";
+
+}
 }
